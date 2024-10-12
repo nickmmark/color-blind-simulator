@@ -8,8 +8,15 @@ Color vision deficiency (CVD) is a common but under-recognized condition that re
 I was talking to my 7 yo about how different people percieve the world differently, and we started talking about color blindness. He understood conceptually, but asked me what it was like to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple iOS app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and make sure infographics or apps are CVD accessible.
 
 #### Background on Color Vision
+Humans are trichromats meaning that we use 3 cones to perceive different wavelengths of light:
+- L cones - sensitive to longer wavelength light; peak sensitivity 560 nm (red)
+- M cones - sensitive to medium wavelength light; peak sensitivity 530 nm (yellow/green)
+- S cones - sensitive to short wavelength light; peak sensitivity 420 nm (blue)
 
 ![Plot of wavelength of light versus responsivity of human cone and rod cells](https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Cone_wavelengths_and_perception.jpg)
+
+Absence of one or more of these cones alters our perception of color and causes color vision deficiency (CVD).
+
 
 ### Implementation
 #### Design
