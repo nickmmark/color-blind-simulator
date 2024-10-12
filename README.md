@@ -3,7 +3,7 @@ a simple iOS app to demonstrate what the world looks like for people with color 
 
 Colored pencils            |  Ishihara vision test
 :-------------------------:|:-------------------------:
-! <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Colored_Pencils.GIF" width="200"> | |
+! <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Colored_Pencils.GIF" width="200"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Ishihara_color_test.GIF" width="200"> |
 
 ### Description
 Color vision deficiency (CVD) is a common but under-recognized condition that results in decreased ability to discern colors. It is usually hereditary (though there are acquired forms). There are several types depending on which color sensing opsin is missing. CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) have CVD. The prevalence of CVD has significant implications for graphic and UX design, as a significant fraction of the audience may not understand your use of color.
