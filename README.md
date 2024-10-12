@@ -24,14 +24,14 @@ Absence of one or more of these cones alters our perception of color and causes 
 
 ### Implementation
 #### Design
-- Camera Feed: The app uses AVCaptureSession to capture video frames from the device’s camera in real-time.
+- Camera Feed: The app uses `AVCaptureSession` to capture video frames from the device’s camera in real-time.
 - Core Image Filtering: The captured frames are processed using Core Image filters, specifically `CIColorMatrix`, to adjust the color channels based on the type of color blindness selected.
-- User Interface: The app provides a segmented control for switching between different filters (Protanopia, Deuteranopia, Tritanopia, and normal vision). The processed video is displayed using a UIImageView. The app also features `pinch-to-zoom` functionality and disables the `isIdleTimer` to prevent the screen from dimming.
+- User Interface: The app provides a segmented control for switching between different filters (Protanopia, Deuteranopia, Tritanopia, and normal vision). The processed video is displayed using a `UIImageView`. The app also features `pinch-to-zoom` functionality and disables the `isIdleTimer` to prevent the screen from dimming.
 
 ### Filters
-Protanopia (Red-Weakness): Red channel is reduced significantly, shifting color perception toward greens and blues.
-Deuteranopia (Green-Weakness): Green channel is reduced, with stronger emphasis on reds and blues.
-Tritanopia (Blue-Weakness): Blue channel is reduced, shifting perception to reds and greens.
+- Protanopia (Red-Weakness): Red channel is reduced significantly, shifting color perception toward greens and blues.
+- Deuteranopia (Green-Weakness): Green channel is reduced, with stronger emphasis on reds and blues.
+- Tritanopia (Blue-Weakness): Blue channel is reduced, shifting perception to reds and greens.
 
 `CIColorMatrix` works by applying a color transformation matrix to an image. Each color channel (Red, Green, Blue, and Alpha) is multiplied by a vector that defines how much of each channel is used. In the app, the key property that we modify is:
 - inputRVector: Controls the red channel.
@@ -76,7 +76,7 @@ To tweak the filters, you can modify the values in the CIVector for each channel
 - Reducing a color: Decrease the value for that color in its corresponding vector (e.g., decrease the first value in inputBVector to reduce blue).
 - Each vector has values between 0.0 and 1.0, and you can play around with the numbers to fine-tune the color perception based on your needs.
 
-Let’s say you want a stronger blue-weakness simulation for Tritanopia. You might change the blue vector (inputBVector) to:
+Let’s say you want a stronger blue-weakness simulation for Tritanopia. You could change the blue vector (inputBVector) to:
 ```swift
 CIVector(x: 0, y: 0.5, z: 0.5, w: 0)
 ```
@@ -93,7 +93,9 @@ This reduces the blue even more, further altering how blues are perceived in the
 2. Build and run the project on an iOS device with a camera.
 3. Use the toggle in the app to switch between different color blindness simulations.
 
+### Features to add
+[ ] I'd love to have this app function as a widget on the lock screen
+[ ] It would be interesting if they app could display a broader range of colors to represent tetrachromacy
 
 ### References
 - icon created using [Ishihara Plate Generator](https://franciscouzo.github.io/ishihara/)
-- 
