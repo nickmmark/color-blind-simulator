@@ -5,14 +5,8 @@ Colored pencils            |  Ishihara vision test
 :-------------------------:|:-------------------------:
 ! <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Colored_Pencils.GIF" width="200"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Ishihara_Color_test.GIF" width="200"> |
 
-### Description
-Color vision deficiency (CVD) is a common but under-recognized condition that results in decreased ability to discern colors. It is usually hereditary (though there are acquired forms). There are several types depending on which color sensing opsin is missing. CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) have CVD. The prevalence of CVD has significant implications for graphic and UX design, as a significant fraction of the audience may not understand your use of color.
-
-#### Inspiration
-I was talking to my 7 yo about how different people percieve the world differently, and we started talking about color blindness. He understood conceptually, but asked me what it was like to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple iOS app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and make sure infographics or apps are CVD accessible.
-
-#### Background on Color Vision
-Humans are trichromats meaning that we use 3 cones to perceive different wavelengths of light:
+### Background
+Humans are trichromats meaning that we use 3 color sensing cones to perceive different wavelengths of light. We perceive color as the relative intensity of three different wavelengths.
 - L cones - sensitive to longer wavelength light; peak sensitivity 560 nm (red)
 - M cones - sensitive to medium wavelength light; peak sensitivity 530 nm (yellow/green)
 - S cones - sensitive to short wavelength light; peak sensitivity 420 nm (blue)
@@ -20,6 +14,14 @@ Humans are trichromats meaning that we use 3 cones to perceive different wavelen
 ![Plot of wavelength of light versus responsivity of human cone and rod cells](https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Cone_wavelengths_and_perception.jpg)
 
 Absence of one or more of these cones alters our perception of color and causes color vision deficiency (CVD).
+
+Color vision deficiency (CVD) is a common but under-recognized condition that results in decreased ability to discern colors. It is usually hereditary (though there are acquired forms) caused by a genetic defect in the opsin gene. There are several types of CVD depending on which color sensing opsin is missing, though all are on the X-chromosome, and are therefore more common in males.
+
+CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) have CVD. The prevalence of CVD has significant implications for graphic and UX design, as a significant fraction of your audience may not perceive color as you do.
+
+
+#### Inspiration
+I was talking to my 7 yo about how different people percieve the world differently, and we started talking about color blindness. He understood conceptually, but asked me what it was like to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple iOS app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and make sure infographics or apps are CVD accessible.
 
 
 ### Implementation
