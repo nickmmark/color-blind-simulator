@@ -4,7 +4,7 @@ a simple iOS app to demonstrate what the world looks like for people with color 
 ### Description
 Color vision deficiency (CVD) is a common but under-recognized condition that results in decreased ability to discern colors. It is usually hereditary (though there are acquired forms). There are several types depending on which color sensing opsin is missing. CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) have CVD. The prevalence of CVD has significant implications for graphic and UX design, as a significant fraction of the audience may not understand your use of color.
 
-### Inspiration
+#### Inspiration
 I was talking to my 7 yo about how different people percieve the world differently, and we started talking about color blindness. He understood conceptually, but asked me what it was like to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple iOS app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and make sure infographics or apps are CVD accessible.
 
 ### Implementation
@@ -60,6 +60,12 @@ To tweak the filters, you can modify the values in the CIVector for each channel
 - Boosting a color: Increase the value for that color in its corresponding vector (e.g., increase the first value in inputRVector to boost red).
 - Reducing a color: Decrease the value for that color in its corresponding vector (e.g., decrease the first value in inputBVector to reduce blue).
 - Each vector has values between 0.0 and 1.0, and you can play around with the numbers to fine-tune the color perception based on your needs.
+
+Let’s say you want a stronger blue-weakness simulation for Tritanopia. You might change the blue vector (inputBVector) to:
+```swift
+CIVector(x: 0, y: 0.5, z: 0.5, w: 0)
+```
+This reduces the blue even more, further altering how blues are perceived in the image.
 
 
 ### Requirements
