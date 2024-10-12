@@ -11,7 +11,7 @@ I was talking to my 7 yo about how different people percieve the world different
 #### Design
 - Camera Feed: The app uses AVCaptureSession to capture video frames from the device’s camera in real-time.
 - Core Image Filtering: The captured frames are processed using Core Image filters, specifically `CIColorMatrix`, to adjust the color channels based on the type of color blindness selected.
-- User Interface: The app provides a segmented control for switching between different filters (Protanopia, Deuteranopia, Tritanopia, and normal vision). The processed video is displayed using a UIImageView.
+- User Interface: The app provides a segmented control for switching between different filters (Protanopia, Deuteranopia, Tritanopia, and normal vision). The processed video is displayed using a UIImageView. The app also features `pinch-to-zoom` functionality and disables the `isIdleTimer` to prevent the screen from dimming.
 
 ### Filters
 Protanopia (Red-Weakness): Red channel is reduced significantly, shifting color perception toward greens and blues.
