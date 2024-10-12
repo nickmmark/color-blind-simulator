@@ -7,6 +7,10 @@ Color vision deficiency (CVD) is a common but under-recognized condition that re
 #### Inspiration
 I was talking to my 7 yo about how different people percieve the world differently, and we started talking about color blindness. He understood conceptually, but asked me what it was like to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple iOS app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and make sure infographics or apps are CVD accessible.
 
+#### Background on Color Vision
+
+![Plot of wavelength of light versus responsivity of human cone and rod cells](https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Cone_wavelengths_and_perception.jpg)
+
 ### Implementation
 #### Design
 - Camera Feed: The app uses AVCaptureSession to capture video frames from the device’s camera in real-time.
