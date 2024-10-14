@@ -3,7 +3,7 @@ a simple iOS app to demonstrate what the world looks like for people with color 
 
 Colored pencils            |  Ishihara vision test    |   Fall Foliage
 :-------------------------:|:------------------------:|:-------------------------:
-! <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Colored_Pencils.GIF" width="150"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Ishihara_Color_test.GIF" width="150"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Fall_foliage.GIF" width="350"> |
+! <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Colored_Pencils.GIF" width="150"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Ishihara_Color_test.GIF" width="150"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Fall_foliage.GIF" width="550"> |
 
 ### Background
 Humans are trichromats meaning that we use 3 color sensing cones to perceive different wavelengths of light. We perceive color as the relative intensity of three different wavelengths.
