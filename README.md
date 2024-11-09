@@ -16,9 +16,7 @@ Humans are trichromats meaning that we use 3 color sensing cones to perceive dif
 
 ![Plot of wavelength of light versus responsivity of human cone and rod cells](https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Cone_wavelengths_and_perception.jpg)
 
-Absence of one or more of these cones alters our perception of color and causes color vision deficiency (CVD).
-
-Color vision deficiency (CVD) is a common but under-recognized condition that results in decreased ability to discern colors. It is usually hereditary (though there are acquired forms) caused by a genetic defect in the opsin gene. There are several types of CVD depending on which color sensing opsin is missing, though all are on the X-chromosome, and are therefore more common in males.
+Absence of one or more of these cones alters our perception of color and causes color vision deficiency (CVD) as shown above. **Color vision deficiency** (CVD) is a common but under-recognized condition that results in decreased ability to discern colors. It is usually hereditary (though there are acquired forms) caused by a genetic defect in the opsin gene. There are several types of CVD depending on which color sensing opsin is missing, though all are on the X-chromosome, and are therefore more common in males.
 
 CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) have CVD. The prevalence of CVD has significant implications for graphic and UX design, as a significant fraction of your audience may not perceive color as you do.
 
