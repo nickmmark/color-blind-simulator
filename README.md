@@ -22,14 +22,14 @@ CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) 
 
 ### Implementation
 #### Design
-- Camera Feed: The app uses `AVCaptureSession` to capture video frames from the device’s camera in real-time.
-- Core Image Filtering: The captured frames are processed using Core Image filters, specifically `CIColorMatrix`, to adjust the color channels based on the type of color blindness selected.
-- User Interface: The app provides a segmented control for switching between different filters (Protanopia, Deuteranopia, Tritanopia, and normal vision). The processed video is displayed using a `UIImageView`. The app also features `pinch-to-zoom` functionality and disables the `isIdleTimer` to prevent the screen from dimming.
+- **Camera Feed**: The app uses `AVCaptureSession` to capture video frames from the device’s camera in real-time.
+- **Core Image Filtering**: The captured frames are processed using Core Image filters, specifically `CIColorMatrix`, to adjust the color channels based on the type of color blindness selected.
+- **User Interface**: The app provides a segmented control for switching between different filters (Protanopia, Deuteranopia, Tritanopia, and normal vision). The processed video is displayed using a `UIImageView`. The app also features `pinch-to-zoom` functionality and disables the `isIdleTimer` to prevent the screen from dimming.
 
 ### Filters
-- Protanopia (Red-Weakness): Red channel is reduced significantly, shifting color perception toward greens and blues.
-- Deuteranopia (Green-Weakness): Green channel is reduced, with stronger emphasis on reds and blues.
-- Tritanopia (Blue-Weakness): Blue channel is reduced, shifting perception to reds and greens.
+- **Protanopia** (Red-Weakness): Red channel is reduced significantly, shifting color perception toward greens and blues. (1% of males, 0.01% of females)
+- **Deuteranopia** (Green-Weakness): Green channel is reduced, with stronger emphasis on reds and blues. (1.5% of males, 0.01% of females)
+- **Tritanopia** (Blue-Weakness): Blue channel is reduced, shifting perception to reds and greens. (0.008% of males & females)
 
 `CIColorMatrix` works by applying a color transformation matrix to an image. Each color channel (Red, Green, Blue, and Alpha) is multiplied by a vector that defines how much of each channel is used. In the app, the key property that we modify is:
 - inputRVector: Controls the red channel.
