@@ -1,5 +1,5 @@
 # color-blind-simulator
-a simple iOS app to demonstrate what the world looks like for people with color vision deficiencies
+a simple iOS app to demonstrate what the world looks like for people with [color vision deficiencies](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness#:~:text=What%20is%20color%20blindness%3F,vision%20deficiency%20runs%20in%20families.)
 
 Colored pencils            |  Ishihara vision test    |   Fall Foliage
 :-------------------------:|:------------------------:|:-------------------------:
