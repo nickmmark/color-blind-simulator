@@ -1,5 +1,5 @@
 # color-blind-simulator
-a simple iOS app to demonstrate what the world looks like for people with [color vision deficiencies](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness#:~:text=What%20is%20color%20blindness%3F,vision%20deficiency%20runs%20in%20families.)
+an iOS app to demonstrate what the world looks like for people with [color vision deficiencies](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness#:~:text=What%20is%20color%20blindness%3F,vision%20deficiency%20runs%20in%20families.)
 
 Colored pencils            |  Ishihara vision test    |   Fall Foliage
 :-------------------------:|:------------------------:|:-------------------------:
@@ -97,3 +97,6 @@ This reduces the blue even more, further altering how blues are perceived in the
 
 ### References
 - icon created using [Ishihara Plate Generator](https://franciscouzo.github.io/ishihara/)
+- conceptually this work is the opposite of the work by Elrefaei et al [Smartphone Based Image Color Correction for Color Blindness
+Authors](https://online-journals.org/index.php/i-jim/article/view/8160)
+
