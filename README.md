@@ -6,7 +6,7 @@ Colored pencils            |  Ishihara vision test    |   Fall Foliage
  <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Colored_Pencils.GIF" width="125"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Ishihara_Color_test.GIF" width="125"> | <img src="https://github.com/nickmmark/color-blind-simulator/blob/main/Figures/Fall_foliage.GIF" width="550"> |
 
 ### Inspiration
-I was talking to my 7 yo about how different people percieve the world differently, and we talked about color blindness. He understood conceptually, but asked me what _does it feel like_ to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple iOS app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and ensure that infographics or apps are accessible.
+I was talking to my 7 yo about how different people percieve the world differently, and we discussed color blindness. He understood conceptually, but asked me what _does it feel like_ to experience the world with color blindness. I said I didn't really know, but thought we could find out together by making a simple app. It turns out in addition to the pedagogical value this app is also useful to double check design choices, and ensure that infographics, websites, powerpoints, etc are accessible for everyone.
 
 ### Background
 Humans are [trichromats](https://en.wikipedia.org/wiki/Trichromacy) meaning that we use 3 color sensing cones to perceive different wavelengths of light. We perceive color as the relative intensity of three different wavelengths.
@@ -91,9 +91,9 @@ This reduces the blue even more, further altering how blues are perceived in the
 2. Build and run the project on an iOS device with a camera.
 3. Use the toggle in the app to switch between different color blindness simulations.
 
-### Features to add
-[ ] I'd love to have this app function as a widget on the lock screen
-[ ] It would be interesting if they app could display a broader range of colors to represent tetrachromacy
+### Features to add... someday
+[ ] I'd love to have this app function as a widget on the lock screen (e.g. you could more quickly open it)
+[ ] It would be interesting if the app could display a broader range of colors to represent tetrachromacy (need to figure out how to represent this)
 
 ### References
 - icon created using [Ishihara Plate Generator](https://franciscouzo.github.io/ishihara/)
