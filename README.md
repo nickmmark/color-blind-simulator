@@ -99,6 +99,25 @@ This reduces the blue even more, further altering how blues are perceived in the
 
 Demo [here](https://nickmmark.github.io/color-blind-simulator/web-app-color-blind-simulator/index.html)
 
+### Features
+
+* Live webcam via `getUserMedia
+* Vision modes (human CVD): protan/deutan/tritan (-opia/-anomaly) + achromatopsia
+* Animal modes: dog, deer, cat (dichromats) and pigeon, hawk (tetrachromats w/ UV false-color)
+* Split view: left = original, right = simulated (aspect-correct “cover” draw; no distortion)
+* Spectral chart: shows relative cone sensitivities (S/M/L; plus UV for birds) with optional human overlay
+* Performance controls: processing scale slider, resolution picker, mirror toggle
+* Snapshot: one-click PNG export of the simulated frame
+* All local: no servers, no tracking, runs entirely in the browser
+
+### How it works
+* Per-pixel transform: Each frame is drawn to an offscreen canvas, transformed, then composited.
+* Human CVD modes use established 3×3 matrices.
+* Animal modes use explicit 3×3 matrices tuned to approximate known dichromat/tetrachromat percepts:
+ * Dogs/deer/cats ≈ deuteranopia-like red–green compression with small hue shifts.
+ * Pigeon/hawk add a mild blue/magenta lift to hint at UV (since displays can’t emit UV).
+* Split view: Two independent “cover” draws crop the source to avoid stretch/compression in either half.
+* Spectral plot: Gaussian cone models render S/M/L (and UV for tetrachromats) under a muted wavelength band; optional dashed overlay shows human for comparison.
 
 
 ## References
