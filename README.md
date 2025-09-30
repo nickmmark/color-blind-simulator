@@ -20,7 +20,7 @@ Absence of one or more of these cones alters our perception of color and causes 
 
 CVD is quite common; ***up to*** 1 in 12 males (8%) and 1 in 200 females (0.5%) have CVD. The prevalence of CVD has significant implications for graphic and UX design, as a significant fraction of your audience may not perceive color as you do.
 
-### Implementation
+## IOS Implementation (Swift)
 #### Design
 - **Camera Feed**: The app uses `AVCaptureSession` to capture video frames from the device’s camera in real-time.
 - **Core Image Filtering**: The captured frames are processed using Core Image filters, specifically `CIColorMatrix`, to adjust the color channels based on the type of color blindness selected.
@@ -95,7 +95,13 @@ This reduces the blue even more, further altering how blues are perceived in the
 [ ] I'd love to have this app function as a widget on the lock screen (e.g. you could more quickly open it)
 [ ] It would be interesting if the app could display a broader range of colors to represent tetrachromacy (need to figure out how to represent this)
 
-### References
+## WebApp Implementation (JS)
+
+
+
+
+
+## References
 - icon created using [Ishihara Plate Generator](https://franciscouzo.github.io/ishihara/)
 - conceptually this work is the opposite of the work by Elrefaei et al [Smartphone Based Image Color Correction for Color Blindness
 Authors](https://online-journals.org/index.php/i-jim/article/view/8160)
