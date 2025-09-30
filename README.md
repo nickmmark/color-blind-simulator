@@ -1,5 +1,5 @@
 # color-blind-simulator
-an iOS app to demonstrate what the world looks like for people with [color vision deficiencies](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness#:~:text=What%20is%20color%20blindness%3F,vision%20deficiency%20runs%20in%20families.)
+an iOS ann webapp to demonstrate what the world looks like for people with [color vision deficiencies](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness#:~:text=What%20is%20color%20blindness%3F,vision%20deficiency%20runs%20in%20families.)
 
 Colored pencils            |  Ishihara vision test    |   Fall Foliage
 :-------------------------:|:------------------------:|:-------------------------:
@@ -97,7 +97,7 @@ This reduces the blue even more, further altering how blues are perceived in the
 
 ## WebApp Implementation (JS)
 
-
+Demo [here](https://nickmmark.github.io/color-blind-simulator/web-app-color-blind-simulator/index.html)
 
 
 
