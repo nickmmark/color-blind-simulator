@@ -26,7 +26,7 @@
   footer { border-top:1px solid #1f2937; display:flex; justify-content:space-between; align-items:center; }
   a { color:var(--accent); text-decoration:none; }
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1r 1fr; gap:8px; }
   .danger { background:#1a0d12; border:1px solid #3f1218; color:#fecaca }
   .primary { background:#0f172a; border:1px solid #334155 }
 
@@ -155,6 +155,7 @@
     </a>
   </div>
 </footer>
+
 
 <script>
 (() => {
@@ -314,11 +315,22 @@ function drawCover(ctx, src, dx, dy, dw, dh){
   const {sx,sy,sWidth,sHeight}=computeCoverRect(sw,sh,dw,dh);
   ctx.drawImage(src, sx,sy,sWidth,sHeight, dx,dy,dw,dh);
 }
-function drawSplit(ctxOut, w, h, mirror=false){
-  ctxOut.save(); if(mirror){ ctxOut.translate(w,0); ctxOut.scale(-1,1); }
-  const half=Math.floor(w/2); ctxOut.imageSmoothingEnabled=true;
+
+/* ====== UPDATED: split draw with optional blur on left (human) side ====== */
+function drawSplit(ctxOut, w, h, mirror=false, blurLeftPx=0){
+  ctxOut.save();
+  if(mirror){ ctxOut.translate(w,0); ctxOut.scale(-1,1); }
+  const half=Math.floor(w/2);
+  ctxOut.imageSmoothingEnabled=true;
+
+  // Left: original/human (optional blur)
+  if (blurLeftPx>0) ctxOut.filter = `blur(${blurLeftPx}px)`;
   drawCover(ctxOut, els.vid, 0, 0, half, h);
+  ctxOut.filter = 'none';
+
+  // Right: processed
   drawCover(ctxOut, els.work, half, 0, w-half, h);
+
   ctxOut.restore();
 }
 
@@ -367,7 +379,47 @@ function uvFalseColorNudge(data){
   }
 }
 
-/* ========================= Spectral chart drawing (with animal waveforms restored) ========================= */
+/* ====== NEW: color helpers for transforming the spectrum band ====== */
+function rgbApplyMatrix(r,g,b,M){
+  const rp = M[0][0]*r + M[0][1]*g + M[0][2]*b;
+  const gp = M[1][0]*r + M[1][1]*g + M[1][2]*b;
+  const bp = M[2][0]*r + M[2][1]*g + M[2][2]*b;
+  return [
+    rp<0?0:rp>255?255:rp,
+    gp<0?0:gp>255?255:gp,
+    bp<0?0:bp>255?255:bp
+  ];
+}
+function uvNudgeColor(r,g,b){
+  const uv = 0.5*r + 0.5*g;
+  const b2 = b + 0.20*uv;
+  const r2 = r * 0.92;
+  return [r2>255?255:r2, g, b2>255?255:b2];
+}
+function transformColorForMode(mode, r, g, b){
+  if (mode.startsWith('species:')){
+    const key = mode.split(':')[1];
+    if (key === 'pigeon' || key === 'hawk'){
+      const base = key==='pigeon' ? ANIMAL.pigeon_base : ANIMAL.hawk_base;
+      let [R,G,B] = rgbApplyMatrix(r,g,b, base);
+      if (els.falseColorUV.checked) [R,G,B] = uvNudgeColor(R,G,B);
+      return [R,G,B];
+    } else {
+      const M = ANIMAL[key];
+      return M ? rgbApplyMatrix(r,g,b,M) : [r,g,b];
+    }
+  } else if (mode === 'achromatopsia'){
+    const y = 0.299*r + 0.587*g + 0.114*b;
+    const Y = y<0?0:y>255?255:y;
+    return [Y,Y,Y];
+  } else if (mode !== 'none'){
+    const M = MATRICES[mode];
+    return rgbApplyMatrix(r,g,b,M);
+  }
+  return [r,g,b];
+}
+
+/* ========================= Spectral chart drawing (with animal waveforms) ========================= */
 function drawSpectra(){
   const ctx = els.spectra.getContext('2d');
   const w = els.spectra.width, h = els.spectra.height;
@@ -386,13 +438,16 @@ function drawSpectra(){
   ctx.textBaseline = 'bottom';
   ctx.fillText('Relative Sensitivity', margin.l + plotW/2, margin.t - 8);
 
-  // Bottom wavelength band
+  // ====== UPDATED: Bottom wavelength band transformed by current mode ======
   const bandH = Math.max(14, Math.round(plotH * 0.22));
   const bandY = margin.t + plotH - bandH;
-  ctx.save(); ctx.globalAlpha = 0.65;
+  ctx.save();
+  ctx.globalAlpha = 0.95;
   for(let x=0; x<plotW; x++){
     const wl = 380 + (x/plotW) * (700-380);
-    ctx.fillStyle = wlToRGB(wl);
+    const m = wlToRGB(wl).match(/\d+/g).map(Number);
+    const [r,g,b] = transformColorForMode(els.mode.value, m[0], m[1], m[2]);
+    ctx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
     ctx.fillRect(margin.l + x, bandY, 1, bandH);
   }
   ctx.restore();
@@ -517,15 +572,21 @@ function tick(){
   }
   wCtx.putImageData(img, 0, 0);
 
-  // Subtle animal blur hint (leave off for humans)
-  if (mode.startsWith('species:')) boxBlur(els.work, wCtx, 0.5);
+  // ====== UPDATED: species blur — disabled for hawk, subtle for others ======
+  if (mode.startsWith('species:')){
+    const key = mode.split(':')[1];
+    if (key !== 'hawk') boxBlur(els.work, wCtx, 0.5);
+  }
 
   // Output to main canvas (cover + optional split)
   const outW=els.out.width, outH=els.out.height;
   oCtx.save();
   oCtx.clearRect(0,0,outW,outH);
-  if (els.split.checked && mode!=='none'){ drawSplit(oCtx, outW, outH, els.mirror.checked); }
-  else {
+  if (els.split.checked && mode!=='none'){
+    // ====== UPDATED: blur the human (left) side when hawk is selected ======
+    const blurLeft = (mode === 'species:hawk') ? 1.2 : 0;
+    drawSplit(oCtx, outW, outH, els.mirror.checked, blurLeft);
+  } else {
     if (els.mirror.checked){ oCtx.translate(outW,0); oCtx.scale(-1,1); }
     oCtx.imageSmoothingEnabled = true;
     const src = (mode === 'none') ? els.vid : els.work;
@@ -562,7 +623,7 @@ els.size.addEventListener('input', ()=>{ els.sizeVal.textContent=`${parseFloat(e
 els.resolution.addEventListener('change', async ()=>{ if(!stream) return; stopCamera(); await startCamera(); });
 els.mode.addEventListener('change', ()=>{ els.badge.textContent = els.mode.value; drawSpectra(); });
 els.showNormalOverlay.addEventListener('change', drawSpectra);
-els.falseColorUV.addEventListener('change', ()=>{/* only affects pigeon/hawk pixels, not curves */});
+els.falseColorUV.addEventListener('change', drawSpectra); // ensure band updates with toggle
 window.addEventListener('pagehide', stopCamera);
 
 window.addEventListener('load', () => {
