@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Color Vision & Animal Vision Simulator</title>
+<style>
+  :root { --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#60a5fa; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial; min-height:100vh; display:grid; grid-template-rows:auto 1fr auto; }
+  header, footer { padding:12px 16px; background:#0b1022; border-bottom:1px solid #1f2937; }
+  header h1 { margin:0; font-size:16px; font-weight:600; letter-spacing:.2px; }
+  main { display:grid; gap:12px; grid-template-columns:340px 1fr; padding:12px; }
+  .panel { background:var(--panel); border:1px solid #1f2937; border-radius:12px; padding:12px; }
+  .controls label { display:block; margin:10px 0 4px; color:var(--muted); font-weight:600; font-size:12px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  select, input[type="range"], button { background:#0b1022; color:var(--text); border:1px solid #1f2937; border-radius:8px; padding:8px 10px; font-size:14px; }
+  select, input[type="range"] { width:100%; }
+  button { cursor:pointer; }
+  .small { font-size:12px; color:var(--muted); }
+  .video-wrap { position:relative; display:grid; place-items:center; background:#0b1022; border:1px solid #1f2937; border-radius:12px; overflow:hidden; min-height:320px; }
+  canvas { max-width:100%; width:100%; height:auto; display:block; }
+  .badge { position:absolute; top:8px; left:8px; background:rgba(2,6,23,.75); padding:4px 8px; border-radius:999px; border:1px solid #1f2937; font-size:12px; }
+  .fps { position:absolute; top:8px; right:8px; font-size:12px; color:#bbf7d0; }
+  .error { color:#fecaca; background:rgba(127,29,29,.2); padding:8px 10px; border-radius:8px; border:1px solid #7f1d1d; }
+  footer { border-top:1px solid #1f2937; display:flex; justify-content:space-between; align-items:center; }
+  a { color:var(--accent); text-decoration:none; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .danger { background:#1a0d12; border:1px solid #3f1218; color:#fecaca }
+  .primary { background:#0f172a; border:1px solid #334155 }
+
+  /* Spectra card */
+  .spectra-card { margin-top:12px; }
+  .spectra-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .legend { display:flex; gap:10px; flex-wrap:wrap; }
+  .key { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+  .swatch { width:14px; height:3px; border-radius:2px; background:#888; }
+  .swatch.s { background:#7aa2ff; }   /* S ~ blue */
+  .swatch.m { background:#7bff7a; }   /* M ~ green */
+  .swatch.l { background:#ff7a7a; }   /* L ~ red */
+  .swatch.uv{ background:#c084fc; }   /* UV ~ purple */
+  .swatch.alt { border:1px dashed #cbd5e1; background:transparent; height:0; border-top-width:2px; }
+  .spectra-canvas { border:1px solid #1f2937; border-radius:10px; background:#0b1022; }
+</style>
+</head>
+<body>
+  <header><h1>Color Vision & Animal Vision Simulator</h1></header>
+
+  <main>
+    <section class="panel controls">
+      <div class="row" style="gap:6px; margin-bottom:8px;">
+        <button id="btnStart" class="primary">Start Camera</button>
+        <button id="btnStop" class="danger" disabled>Stop</button>
+      </div>
+
+      <label for="mode">Vision Mode</label>
+      <select id="mode">
+        <optgroup label="Human (Color-Vision Deficiency)">
+          <option value="none">None (original)</option>
+          <option value="protanopia">Protanopia (no L)</option>
+          <option value="deuteranopia">Deuteranopia (no M)</option>
+          <option value="tritanopia">Tritanopia (no S)</option>
+          <option value="protanomaly">Protanomaly (reduced L)</option>
+          <option value="deuteranomaly">Deuteranomaly (reduced M)</option>
+          <option value="tritanomaly">Tritanomaly (reduced S)</option>
+          <option value="achromatopsia">Achromatopsia (monochrome)</option>
+        </optgroup>
+        <optgroup label="Animal (Vertebrate) Vision)">
+          <option value="species:dog">Dog (dichromat)</option>
+          <option value="species:deer">Deer (dichromat)</option>
+          <option value="species:cat">Cat (dichromat)</option>
+          <option value="species:pigeon">Pigeon (tetrachromat + UV*)</option>
+          <option value="species:hawk">Hawk (tetrachromat + UV*)</option>
+        </optgroup>
+      </select>
+
+      <div class="grid2">
+        <div>
+          <label for="size">Processing Scale <span class="small">(lower = faster)</span></label>
+          <input id="size" type="range" min="0.3" max="1.0" step="0.05" value="0.8" />
+          <div class="small"><span id="sizeVal">0.80×</span></div>
+        </div>
+        <div>
+          <label for="resolution">Camera Resolution</label>
+          <select id="resolution">
+            <option value="640x480">640×480</option>
+            <option value="1280x720" selected>1280×720</option>
+            <option value="1920x1080">1920×1080</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:8px;">
+        <label class="row" style="gap:6px; margin:0;">
+          <input id="mirror" type="checkbox" checked /> Mirror preview
+        </label>
+        <label class="row" style="gap:6px; margin:0;">
+          <input id="showOriginal" type="checkbox" /> Split view (left original)
+        </label>
+        <label class="row" style="gap:6px; margin:0;">
+          <input id="falseColorUV" type="checkbox" checked /> False-color UV (animal)
+        </label>
+      </div>
+
+      <label>Snapshot</label>
+      <div class="row">
+        <button id="btnShot">Download PNG</button>
+        <span class="small">Downloads the simulated view.</span>
+      </div>
+
+      <div id="msg" style="margin-top:10px;"></div>
+      <div class="small" style="margin-top:8px;opacity:.8">
+        *Displays can’t emit UV; tetrachromat UV is mapped into visible purples/blues so humans can perceive the contrast.
+      </div>
+    </section>
+
+    <section>
+      <div class="video-wrap">
+        <div class="badge" id="badge">None</div>
+        <div class="fps" id="fps">— FPS</div>
+        <canvas id="out"></canvas>
+        <!-- Hidden elements for processing -->
+        <video id="vid" playsinline muted style="display:none"></video>
+        <canvas id="work" style="display:none"></canvas>
+      </div>
+
+      <!-- Spectral Sensitivity Card -->
+      <div class="panel spectra-card">
+        <div class="spectra-head">
+          <div class="legend" id="legend">
+            <span class="key"><span class="swatch s"></span> S</span>
+            <span class="key"><span class="swatch m"></span> M</span>
+            <span class="key"><span class="swatch l"></span> L</span>
+            <span class="key" id="uvLegend" style="display:none;"><span class="swatch uv"></span> UV</span>
+            <span class="key"><span class="swatch alt"></span> Overlay</span>
+          </div>
+          <label class="row" style="gap:6px;">
+            <input id="showNormalOverlay" type="checkbox" checked/> Show normal overlay
+          </label>
+        </div>
+        <canvas id="spectra" class="spectra-canvas" width="900" height="240" aria-label="Spectral sensitivity"></canvas>
+        <div class="small" style="margin-top:6px;">
+          Wavelength (nm): 380 → 700. Curves are illustrative. Animal modes use simplified cone models; UV shown via false-color.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="small">Built with <code>getUserMedia</code> + Canvas. Processing stays on your device.</div>
+    <div class="small"><a href="https://en.wikipedia.org/wiki/Color_blindness" target="_blank" rel="noreferrer">About color-vision deficiency ↗</a></div>
+  </footer>
+
+<script>
+(() => {
+/* ========================= Human CVD transforms ========================= */
+const MATRICES = {
+  none: [[1,0,0],[0,1,0],[0,0,1]],
+  protanopia:   [[0.56667,0.43333,0],[0.55833,0.44167,0],[0,0.24167,0.75833]],
+  deuteranopia: [[0.625,0.375,0],[0.70,0.30,0],[0,0.30,0.70]],
+  tritanopia:   [[0.95,0.05,0],[0,0.43333,0.56667],[0,0.475,0.525]],
+  protanomaly:  [[0.81667,0.18333,0],[0.33333,0.66667,0],[0,0.125,0.875]],
+  deuteranomaly:[[0.80,0.20,0],[0.25833,0.74167,0],[0,0.14167,0.85833]],
+  tritanomaly:  [[0.96667,0.03333,0],[0,0.73333,0.26667],[0,0.18333,0.81667]],
+  achromatopsia:"achromatopsia"
+};
+
+/* ========================= Animal image transforms (explicit) ========================= */
+const ANIMAL = {
+  dog:  [[0.68,0.32,0.00], [0.78,0.22,0.00], [0.00,0.35,0.65]],
+  deer: [[0.70,0.30,0.00], [0.80,0.20,0.00], [0.00,0.33,0.67]],
+  cat:  [[0.66,0.34,0.00], [0.76,0.24,0.00], [0.00,0.34,0.66]],
+  pigeon_base: [[0.86,0.14,0.00], [0.20,0.70,0.10], [0.10,0.30,0.60]],
+  hawk_base:   [[0.88,0.12,0.00], [0.18,0.74,0.08], [0.08,0.28,0.64]],
+};
+
+/* ========================= Species cone models (for waveforms only) ========================= */
+const SPECIES = {
+  human: { cones: [
+    { label:'S', peak:420, sigma:38, color:'#7aa2ff' },
+    { label:'M', peak:534, sigma:50, color:'#7bff7a' },
+    { label:'L', peak:564, sigma:55, color:'#ff7a7a' },
+  ], uv:false },
+
+  dog: {
+    cones: [
+      { label:'S', peak:430, sigma:45, color:'#7aa2ff' },
+      { label:'L', peak:555, sigma:60, color:'#ff7a7a' },
+    ],
+    uv:false
+  },
+  deer: {
+    cones: [
+      { label:'S', peak:435, sigma:45, color:'#7aa2ff' },
+      { label:'L', peak:555, sigma:60, color:'#ff7a7a' },
+    ],
+    uv:false
+  },
+  cat: {
+    cones: [
+      { label:'S', peak:445, sigma:45, color:'#7aa2ff' },
+      { label:'L', peak:555, sigma:60, color:'#ff7a7a' },
+    ],
+    uv:false
+  },
+  pigeon: {
+    cones: [
+      { label:'UV', peak:370, sigma:25, color:'#c084fc' },
+      { label:'S',  peak:445, sigma:40, color:'#7aa2ff' },
+      { label:'M',  peak:508, sigma:45, color:'#7bff7a' },
+      { label:'L',  peak:565, sigma:50, color:'#ff7a7a' },
+    ],
+    uv:true
+  },
+  hawk: {
+    cones: [
+      { label:'UV', peak:370, sigma:25, color:'#c084fc' },
+      { label:'S',  peak:445, sigma:38, color:'#7aa2ff' },
+      { label:'M',  peak:508, sigma:42, color:'#7bff7a' },
+      { label:'L',  peak:565, sigma:45, color:'#ff7a7a' },
+    ],
+    uv:true
+  },
+};
+
+/* ========================= DOM ========================= */
+const els = {
+  btnStart: document.getElementById('btnStart'),
+  btnStop: document.getElementById('btnStop'),
+  btnShot: document.getElementById('btnShot'),
+  mode: document.getElementById('mode'),
+  size: document.getElementById('size'),
+  sizeVal: document.getElementById('sizeVal'),
+  resolution: document.getElementById('resolution'),
+  mirror: document.getElementById('mirror'),
+  split: document.getElementById('showOriginal'),
+  falseColorUV: document.getElementById('falseColorUV'),
+  badge: document.getElementById('badge'),
+  fps: document.getElementById('fps'),
+  msg: document.getElementById('msg'),
+  out: document.getElementById('out'),
+  work: document.getElementById('work'),
+  vid: document.getElementById('vid'),
+  spectra: document.getElementById('spectra'),
+  showNormalOverlay: document.getElementById('showNormalOverlay'),
+  uvLegend: document.getElementById('uvLegend'),
+};
+let stream = null, rafId = null, lastFpsUpdate = performance.now(), frameCount = 0;
+
+function setMessage(html, isError=false){ els.msg.innerHTML = html ? `<div class="${isError?'error':'small'}">${html}</div>` : '' }
+function parseRes(v){ const [w,h]=v.split('x').map(Number); return {width:w,height:h}; }
+
+/* ========================= Camera & rendering ========================= */
+async function startCamera(){
+  try{
+    const {width,height}=parseRes(els.resolution.value);
+    stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:width},height:{ideal:height},facingMode:'user'},audio:false});
+    els.vid.srcObject=stream; await els.vid.play();
+    els.btnStart.disabled=true; els.btnStop.disabled=false; setMessage('');
+    resizeCanvases(); tick();
+  }catch(err){ console.error(err); setMessage(`Camera error: ${err.message}`,true); }
+}
+function stopCamera(){
+  if(rafId) cancelAnimationFrame(rafId), rafId=null;
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  els.btnStart.disabled=false; els.btnStop.disabled=true;
+}
+function resizeCanvases(){
+  const scale=parseFloat(els.size.value);
+  const vW=els.vid.videoWidth||1280, vH=els.vid.videoHeight||720;
+  els.work.width=Math.max(2,Math.round(vW*scale));
+  els.work.height=Math.max(2,Math.round(vH*scale));
+  els.out.width=vW; els.out.height=vH;
+}
+
+/* ========================= Pixel transforms ========================= */
+function apply3x3(data, M){
+  const m00=M[0][0],m01=M[0][1],m02=M[0][2];
+  const m10=M[1][0],m11=M[1][1],m12=M[1][2];
+  const m20=M[2][0],m21=M[2][1],m22=M[2][2];
+  for (let i=0;i<data.length;i+=4){
+    const r=data[i], g=data[i+1], b=data[i+2];
+    let rp = m00*r + m01*g + m02*b;
+    let gp = m10*r + m11*g + m12*b;
+    let bp = m20*r + m21*g + m22*b;
+    data[i]   = rp<0?0:rp>255?255:rp;
+    data[i+1] = gp<0?0:gp>255?255:gp;
+    data[i+2] = bp<0?0:bp>255?255:bp;
+  }
+}
+function applyAchromatopsia(data){
+  for (let i=0;i<data.length;i+=4){
+    const r=data[i], g=data[i+1], b=data[i+2];
+    const y=0.299*r+0.587*g+0.114*b;
+    const v = y<0?0:y>255?255:y;
+    data[i]=data[i+1]=data[i+2]=v;
+  }
+}
+
+/* ========================= Cover draw (no distortion) ========================= */
+function getSourceDims(src){ const sw=src.videoWidth||src.width; const sh=src.videoHeight||src.height; return {sw,sh}; }
+function computeCoverRect(sw, sh, dw, dh){
+  const sAspect=sw/sh, dAspect=dw/dh;
+  if (sAspect > dAspect){ const newSW=Math.round(sh*dAspect); const sx=Math.round((sw-newSW)/2); return {sx,sy:0,sWidth:newSW,sHeight:sh}; }
+  else { const newSH=Math.round(sw/dAspect); const sy=Math.round((sh-newSH)/2); return {sx:0,sy,sWidth:sw,sHeight:newSH}; }
+}
+function drawCover(ctx, src, dx, dy, dw, dh){
+  const {sw,sh}=getSourceDims(src); if(!sw||!sh||!dw||!dh) return;
+  const {sx,sy,sWidth,sHeight}=computeCoverRect(sw,sh,dw,dh);
+  ctx.drawImage(src, sx,sy,sWidth,sHeight, dx,dy,dw,dh);
+}
+function drawSplit(ctxOut, w, h, mirror=false){
+  ctxOut.save(); if(mirror){ ctxOut.translate(w,0); ctxOut.scale(-1,1); }
+  const half=Math.floor(w/2); ctxOut.imageSmoothingEnabled=true;
+  drawCover(ctxOut, els.vid, 0, 0, half, h);
+  drawCover(ctxOut, els.work, half, 0, w-half, h);
+  ctxOut.restore();
+}
+
+/* ========================= Light blur & temporal smoothing (very subtle) ========================= */
+function boxBlur(canvas, ctx, radius=0.5){
+  if (radius<=0) return;
+  const w=canvas.width,h=canvas.height;
+  const tmp=document.createElement('canvas'); tmp.width=w; tmp.height=h;
+  const tctx=tmp.getContext('2d');
+  tctx.filter = `blur(${radius}px)`;
+  tctx.drawImage(canvas,0,0);
+  ctx.clearRect(0,0,w,h);
+  ctx.drawImage(tmp,0,0);
+}
+const FRAMEBUF = []; const MAXBUF = 3;
+
+/* ========================= Spectral helpers & chart ========================= */
+function gauss(x, mu, sigma){ const z=(x-mu)/sigma; return Math.exp(-0.5*z*z); }
+const SPECTRA = { min:380, max:700, step:2 };
+const HUMAN_PEAKS = { S:420, M:534, L:564 };
+const HUMAN_SIGMA = { S:38,  M:50,  L:55  };
+function wlToRGB(lambda){
+  let r=0,g=0,b=0;
+  if (lambda>=380 && lambda<440){ r=-(lambda-440)/(440-380); g=0; b=1; }
+  else if (lambda<490){ r=0; g=(lambda-440)/(490-440); b=1; }
+  else if (lambda<510){ r=0; g=1; b=-(lambda-510)/(510-490); }
+  else if (lambda<580){ r=(lambda-510)/(580-510); g=1; b=0; }
+  else if (lambda<645){ r=1; g=-(lambda-645)/(645-580); b=0; }
+  else if (lambda<=700){ r=1; g=0; b=0; }
+  let factor=1;
+  if (lambda<420) factor=0.3+0.7*(lambda-380)/(420-380);
+  if (lambda>645) factor=0.3+0.7*(700-lambda)/(700-645);
+  return `rgba(${Math.round(255*r*factor)},${Math.round(255*g*factor)},${Math.round(255*b*factor)},1)`;
+}
+
+/* ========================= UV nudge (for pigeons/hawks, optional) ========================= */
+function uvFalseColorNudge(data){
+  for (let i=0;i<data.length;i+=4){
+    const r=data[i], g=data[i+1], b=data[i+2];
+    const uv = (0.5*r + 0.5*g);
+    const b2 = b + 0.20*uv;
+    const r2 = r * 0.92;
+    data[i]   = r2>255?255:r2;
+    data[i+1] = g;
+    data[i+2] = b2>255?255:b2;
+  }
+}
+
+/* ========================= Spectral chart drawing (with animal waveforms restored) ========================= */
+function drawSpectra(){
+  const ctx = els.spectra.getContext('2d');
+  const w = els.spectra.width, h = els.spectra.height;
+  const margin = { l:40, r:10, t:32, b:24 };
+  const plotW = w - margin.l - margin.r;
+  const plotH = h - margin.t - margin.b;
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#0b1022';
+  ctx.fillRect(margin.l, margin.t, plotW, plotH);
+
+  // Title centered
+  ctx.fillStyle = '#e5e7eb';
+  ctx.font = '600 16px system-ui';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('Relative Sensitivity', margin.l + plotW/2, margin.t - 8);
+
+  // Bottom wavelength band
+  const bandH = Math.max(14, Math.round(plotH * 0.22));
+  const bandY = margin.t + plotH - bandH;
+  ctx.save(); ctx.globalAlpha = 0.65;
+  for(let x=0; x<plotW; x++){
+    const wl = 380 + (x/plotW) * (700-380);
+    ctx.fillStyle = wlToRGB(wl);
+    ctx.fillRect(margin.l + x, bandY, 1, bandH);
+  }
+  ctx.restore();
+
+  // Border + ticks
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+  ctx.strokeRect(margin.l, margin.t, plotW, plotH);
+  ctx.fillStyle = '#cbd5e1'; ctx.font = '11px system-ui'; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  for(let wl=380; wl<=700; wl+=40){
+    const x = margin.l + (wl - 380) * plotW / (700 - 380);
+    ctx.fillRect(x, margin.t + plotH, 1, 4);
+    ctx.fillText(String(wl), x-10, margin.t + plotH + 15);
+  }
+
+  // Build human samples (for overlay or human modes)
+  const samples = [];
+  for(let wl=380; wl<=700; wl+=2){
+    const S0 = gauss(wl, HUMAN_PEAKS.S, HUMAN_SIGMA.S);
+    const M0 = gauss(wl, HUMAN_PEAKS.M, HUMAN_SIGMA.M);
+    const L0 = gauss(wl, HUMAN_PEAKS.L, HUMAN_SIGMA.L);
+    samples.push({ wl, S0, M0, L0 });
+  }
+  function xOf(wl){ return margin.l + (wl - 380) * plotW / (700 - 380); }
+  function yOf(val){ const v=Math.max(0,Math.min(1,val)); const scale=0.90; return margin.t + plotH - v * plotH * scale; }
+  function drawCurveFromArrays(wls, vals, color, dashed=false){
+    ctx.beginPath(); let first=true;
+    for (let i=0;i<vals.length;i++){
+      const x = xOf(wls[i]);
+      const y = yOf(vals[i]);
+      if (first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y);
+    }
+    ctx.lineWidth = 2; ctx.strokeStyle = color;
+    if (dashed) ctx.setLineDash([5,3]); else ctx.setLineDash([]);
+    ctx.globalAlpha = dashed ? 0.9 : 1;
+    ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+  }
+
+  const mode = els.mode.value;
+  const showNormal = els.showNormalOverlay.checked;
+  const isSpecies = mode.startsWith('species:');
+  const speciesKey = isSpecies ? mode.split(':')[1] : null;
+
+  // UV legend toggle
+  els.uvLegend.style.display = (isSpecies && SPECIES[speciesKey]?.uv) ? '' : 'none';
+
+  if (!isSpecies){
+    // Human modes: solid = adjusted, dashed = normal overlay
+    function scales(mode){
+      switch(mode){
+        case 'protanopia':    return { S:1, M:1, L:0   };
+        case 'deuteranopia':  return { S:1, M:0, L:1   };
+        case 'tritanopia':    return { S:0, M:1, L:1   };
+        case 'protanomaly':   return { S:1, M:1, L:0.5 };
+        case 'deuteranomaly': return { S:1, M:0.5, L:1 };
+        case 'tritanomaly':   return { S:0.5, M:1, L:1 };
+        case 'achromatopsia': return { S:0.05, M:0.05, L:0.05 };
+        default:              return { S:1, M:1, L:1 };
+      }
+    }
+    const sc=scales(mode);
+    const wls = samples.map(p=>p.wl);
+    drawCurveFromArrays(wls, samples.map(p=>p.S0*sc.S), '#7aa2ff', false);
+    drawCurveFromArrays(wls, samples.map(p=>p.M0*sc.M), '#7bff7a', false);
+    drawCurveFromArrays(wls, samples.map(p=>p.L0*sc.L), '#ff7a7a', false);
+    if (showNormal){
+      drawCurveFromArrays(wls, samples.map(p=>p.S0), '#7aa2ff', true);
+      drawCurveFromArrays(wls, samples.map(p=>p.M0), '#7bff7a', true);
+      drawCurveFromArrays(wls, samples.map(p=>p.L0), '#ff7a7a', true);
+    }
+  } else {
+    // Species mode: draw that animal's cone curves (including UV if present)
+    const spec = SPECIES[speciesKey];
+    const wls = []; for (let wl=380; wl<=700; wl+=2) wls.push(wl);
+    for (const cone of spec.cones){
+      const vals = wls.map(wl=>gauss(wl, cone.peak, cone.sigma));
+      drawCurveFromArrays(wls, vals, cone.color, false);
+    }
+    // Optional dashed human overlay for reference
+    if (showNormal){
+      drawCurveFromArrays(wls, samples.map(p=>p.S0), '#7aa2ff', true);
+      drawCurveFromArrays(wls, samples.map(p=>p.M0), '#7bff7a', true);
+      drawCurveFromArrays(wls, samples.map(p=>p.L0), '#ff7a7a', true);
+    }
+  }
+
+  // Mode label (top-right inside plot)
+  ctx.fillStyle = '#e5e7eb'; ctx.font = '12px system-ui'; ctx.textAlign='right'; ctx.textBaseline='top';
+  const label = isSpecies ? ('Species: ' + speciesKey) : ('Mode: ' + mode);
+  ctx.fillText(label, margin.l + plotW - 6, margin.t + 6);
+}
+
+/* ========================= Main render loop ========================= */
+function tick(){
+  rafId = requestAnimationFrame(tick);
+  const wCtx = els.work.getContext('2d', { willReadFrequently: true });
+  const oCtx = els.out.getContext('2d');
+
+  const vW=els.vid.videoWidth, vH=els.vid.videoHeight;
+  if (!vW || !vH) return;
+
+  // Source → work
+  wCtx.drawImage(els.vid, 0, 0, els.work.width, els.work.height);
+
+  // Pixels
+  const img = wCtx.getImageData(0,0,els.work.width,els.work.height);
+  const mode = els.mode.value;
+
+  if (mode.startsWith('species:')){
+    const key = mode.split(':')[1];
+    if (key === 'pigeon' || key === 'hawk'){
+      const base = key==='pigeon' ? ANIMAL.pigeon_base : ANIMAL.hawk_base;
+      apply3x3(img.data, base);
+      if (els.falseColorUV.checked) uvFalseColorNudge(img.data);
+    } else {
+      const M = ANIMAL[key];
+      if (M) apply3x3(img.data, M);
+    }
+  } else if (mode === 'achromatopsia') {
+    applyAchromatopsia(img.data);
+  } else if (mode !== 'none') {
+    apply3x3(img.data, MATRICES[mode]);
+  }
+  wCtx.putImageData(img, 0, 0);
+
+  // Subtle animal blur hint (leave off for humans)
+  if (mode.startsWith('species:')) boxBlur(els.work, wCtx, 0.5);
+
+  // Output to main canvas (cover + optional split)
+  const outW=els.out.width, outH=els.out.height;
+  oCtx.save();
+  oCtx.clearRect(0,0,outW,outH);
+  if (els.split.checked && mode!=='none'){ drawSplit(oCtx, outW, outH, els.mirror.checked); }
+  else {
+    if (els.mirror.checked){ oCtx.translate(outW,0); oCtx.scale(-1,1); }
+    oCtx.imageSmoothingEnabled = true;
+    const src = (mode === 'none') ? els.vid : els.work;
+    drawCover(oCtx, src, 0, 0, outW, outH);
+  }
+  oCtx.restore();
+
+  // UI
+  els.badge.textContent = mode.replace('species:','').replace(/\b\w/g,c=>c.toUpperCase());
+  frameCount++; const now=performance.now();
+  if (now - lastFpsUpdate > 500){
+    els.fps.textContent = `${((frameCount*1000)/(now-lastFpsUpdate)).toFixed(0)} FPS`;
+    frameCount=0; lastFpsUpdate=now;
+  }
+}
+
+/* ========================= Snapshot ========================= */
+function downloadPNG(){
+  const exportCanvas=document.createElement('canvas');
+  exportCanvas.width=els.out.width; exportCanvas.height=els.out.height;
+  const ctx=exportCanvas.getContext('2d'); ctx.drawImage(els.out,0,0);
+  exportCanvas.toBlob(b=>{ if(!b) return; const a=document.createElement('a');
+    a.href=URL.createObjectURL(b); a.download=`webcam-${els.mode.value}.png`; a.click(); URL.revokeObjectURL(a.href); },'image/png');
+}
+
+/* ========================= Wire up ========================= */
+els.btnStart.addEventListener('click', async ()=>{
+  if(!navigator.mediaDevices?.getUserMedia){ setMessage('getUserMedia not supported', true); return; }
+  await startCamera();
+});
+els.btnStop.addEventListener('click', stopCamera);
+els.btnShot.addEventListener('click', downloadPNG);
+els.size.addEventListener('input', ()=>{ els.sizeVal.textContent=`${parseFloat(els.size.value).toFixed(2)}×`; if(stream) resizeCanvases(); });
+els.resolution.addEventListener('change', async ()=>{ if(!stream) return; stopCamera(); await startCamera(); });
+els.mode.addEventListener('change', ()=>{ els.badge.textContent = els.mode.value; drawSpectra(); });
+els.showNormalOverlay.addEventListener('change', drawSpectra);
+els.falseColorUV.addEventListener('change', ()=>{/* only affects pigeon/hawk pixels, not curves */});
+window.addEventListener('pagehide', stopCamera);
+
+window.addEventListener('load', () => {
+  drawSpectra();
+});
+})();
+</script>
+</body>
+</html>
