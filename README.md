@@ -101,11 +101,11 @@ Demo [here](https://nickmmark.github.io/color-blind-simulator/web-app-color-blin
 
 ### Features
 
-* Live webcam via `getUserMedia
+* Live webcam via `getUserMedia`
 * Vision modes (human CVD): protan/deutan/tritan (-opia/-anomaly) + achromatopsia
-* Animal modes: dog, deer, cat (dichromats) and pigeon, hawk (tetrachromats w/ UV false-color)
-* Split view: left = original, right = simulated (aspect-correct “cover” draw; no distortion)
-* Spectral chart: shows relative cone sensitivities (S/M/L; plus UV for birds) with optional human overlay
+* Animal modes: dog, deer, cat (all dichromats) and pigeon, hawk (tetrachromats w/ UV false-color)
+* **Split view**: left = original, right = simulated (aspect-correct “cover” draw; no distortion)
+* **Spectral chart**: shows relative cone sensitivities (S/M/L; plus UV for birds) with optional human overlay
 * Performance controls: processing scale slider, resolution picker, mirror toggle
 * Snapshot: one-click PNG export of the simulated frame
 * All local: no servers, no tracking, runs entirely in the browser
